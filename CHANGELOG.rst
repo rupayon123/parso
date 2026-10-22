@@ -6,6 +6,9 @@ Changelog
 Unreleased
 ++++++++++
 
+- Avoid a normalizer crash for a standalone line continuation followed by a
+  comment, and keep indentation checks on the active continuation stack.
+
 0.8.7 (2026-05-02)
 ++++++++++++++++++
 

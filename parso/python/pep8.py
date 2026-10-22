@@ -430,7 +430,7 @@ class PEP8Normalizer(ErrorFinder):
             indentation = spacing.value
             if node.type == IndentationTypes.BACKSLASH \
                     and self._previous_part.type == 'newline':
-                self._indentation_tos = self._indentation_tos.parent
+                self._indentation_tos = node = node.parent
 
             if not self._check_tabs_spaces(spacing):
                 should_be_indentation = node.indentation
@@ -444,7 +444,8 @@ class PEP8Normalizer(ErrorFinder):
                         should_be_indentation = n.indentation
 
                         self._last_indentation_tos = n
-                        if n == node:
+                        # Prefix continuations may not be in the previous stack.
+                        if n == node or n.parent is None:
                             break
                         n = n.parent
 

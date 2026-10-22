@@ -1,4 +1,5 @@
 import parso
+import pytest
 
 
 def issues(code):
@@ -40,3 +41,11 @@ def test_shebang():
     assert not issues('#!\n')
     assert not issues('#!/foo\n')
     assert not issues('#! python\n')
+
+
+@pytest.mark.parametrize("ending, expected_codes", [("", [292]), ("\n", [])])
+def test_comment_after_standalone_backslash(each_version, ending, expected_codes):
+    grammar = parso.load_grammar(version=each_version)
+    module = grammar.parse("\\\n#" + ending)
+    found = grammar._get_normalizer_issues(module)
+    assert [issue.code for issue in found] == expected_codes
