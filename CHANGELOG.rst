@@ -6,6 +6,8 @@ Changelog
 Unreleased
 ++++++++++
 
+- Accept backslashes before braces in f-string literal text.
+
 0.8.7 (2026-05-02)
 ++++++++++++++++++
 

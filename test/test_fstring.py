@@ -87,6 +87,24 @@ def test_valid(code, grammar):
     assert fstring.get_code() == code
 
 
+@pytest.mark.parametrize('prefix', ['f', 'rf'])
+@pytest.mark.parametrize('quote', ['"', '"""'])
+@pytest.mark.parametrize('text', [r'\{value}', r'\{value:03o}', r'\{{value}}'])
+def test_backslash_before_brace(prefix, quote, text, each_version):
+    code = prefix + quote + text + quote
+    grammar = load_grammar(version=each_version)
+    module = grammar.parse(code, error_recovery=False)
+    assert module.get_code() == code
+    assert not list(grammar.iter_errors(module))
+
+
+def test_backslash_before_brace_in_call(grammar):
+    code = r'stream.write(b_(rf"\{ord_(c):0>3o}"))'
+    module = grammar.parse(code, error_recovery=False)
+    assert module.get_code() == code
+    assert not list(grammar.iter_errors(module))
+
+
 @pytest.mark.parametrize(
     'code', [
         # an f-string can't contain unmatched curly braces
@@ -94,6 +112,10 @@ def test_valid(code, grammar):
         'f"{"',
         'f"""}"""',
         'f"""{"""',
+        r'f"\}"',
+        r'rf"\}"',
+        r'f"""\}"""',
+        r'rf"""\}"""',
 
         # invalid conversion characters
         'f"{1!{a}}"',
